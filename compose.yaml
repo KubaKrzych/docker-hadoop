@@ -1,0 +1,72 @@
+services:
+  nn:
+    build:
+      context: .
+    ports:
+      - 9870:9870
+    image: docker-hadoop
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0' 
+          memory: 4096M
+        reservations:
+          cpus: '2.0' 
+          memory: 2048M
+    networks:
+      net:
+        ipv4_address: 10.5.0.8
+  dn1:
+    build:
+      context: .
+    image: docker-hadoop
+    networks:
+      net:
+        ipv4_address: 10.5.0.2
+  dn2:
+    build:
+      context: .
+    image: docker-hadoop
+    networks:
+      net:
+        ipv4_address: 10.5.0.3
+  dn3:
+    build:
+      context: .
+    image: docker-hadoop
+    networks:
+      net:
+        ipv4_address: 10.5.0.4
+  dn4:
+    build:
+      context: .
+    image: docker-hadoop
+    networks:
+      net:
+        ipv4_address: 10.5.0.5
+  dn5:
+    build:
+      context: .
+    image: docker-hadoop
+    networks:
+      net:
+        ipv4_address: 10.5.0.6
+  rm:
+    build:
+      context: .
+    image: docker-hadoop
+    ports:
+      - "8088:8088"
+    networks:
+      net:
+        ipv4_address: 10.5.0.10
+volumes:
+  static:
+
+networks:
+  net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/24
+          gateway: 10.5.0.1
