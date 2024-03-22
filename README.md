@@ -6,13 +6,14 @@ A simple yet helpful hadoop configuration.
 **PLEASE** first read the entire README. At the bottom there are commands listed that might help you resolve the problem you've encountered.
 
 ## Commands to run (please stick to the order)
-1. `docker ps` # check for namenode container hash
-2. `docker exec -it NAMENODE_HASH bash`
+1. `docker-compose up`
+2. `docker ps` # check for namenode container hash
+3. `docker exec -it NAMENODE_HASH bash`
 
 ## Comands to run on **NAMENODE**
 1. `su hadoop && ./hadoop/bin/hdfs namenode -format`
 2. `./hadoop/sbin/start-dfs.sh`
-3. `jps` # Check if namenode, secondary name node, and jps are listed
+3. `jps # Check if namenode, secondary name node, and jps are listed`
 
 ### Swap to **RESOURCE MANAGER**
 1. `docker ps # check for resource manager container hash`
