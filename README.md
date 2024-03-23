@@ -11,18 +11,20 @@ A simple yet helpful hadoop configuration.
 3. `docker exec -it NAMENODE_HASH bash`
 
 ## Comands to run on **NAMENODE**
-1. `su hadoop && ./hadoop/bin/hdfs namenode -format`
-2. `./hadoop/sbin/start-dfs.sh`
-3. `jps # Check if namenode, secondary name node, and jps are listed`
+1. `su hadoop`
+2. `./hadoop/bin/hdfs namenode -format`
+3. `./hadoop/sbin/start-dfs.sh`
+4. `jps # Check if namenode, secondary name node, and jps are listed`
 
-### Swap to **RESOURCE MANAGER**
+### Swap to **RESOURCE MANAGER** in seperate terminal
 1. `docker ps # check for resource manager container hash`
 2. `docker exec -it NAMENODE_HASH bash`
 3. `su hadoop`
 4. `PATH=$PATH:/home/hadoop/bin:$JAVA_HOME/bin`
 5. `yarn resourcemanager`
 
-### Swap back to **NAMENODE**
+### Swap back to **NAMENODE** in seperate terminal
+*Make sure you're logged in as hadoop*
 1. `./hadoop/sbin/start-yarn.sh`
 2. `hdfs dfs -mkdir -p /user/hadoop/books`
 3. `hdfs dfs -put ../test.txt books`
@@ -40,3 +42,6 @@ If you wish you can also copy a book of your choice to the namenode container an
 
 #### If you've encountered an error regarding envs
 `PATH=$PATH:/home/hadoop/bin:$JAVA_HOME/bin`
+
+#### Check who you're logged in as
+`whoami`

@@ -1,19 +1,15 @@
-FROM eclipse-temurin:8
+FROM eclipse-temurin:8 as build
 
 WORKDIR /home
 
-RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y openssh-client openssh-server wget && \
-    wget https://archive.apache.org/dist/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz && \
+RUN wget https://archive.apache.org/dist/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz && \
     tar -xvzf hadoop-3.3.6.tar.gz && \
     ln -s hadoop-3.3.6 hadoop && \
-    rm hadoop-3.3.6.tar.gz && \
-    ssh-keygen -A
+    apt update && apt upgrade -y
 
-RUN groupadd -r hadoop && \
-    useradd -r -g hadoop -d /home/hadoop -m hadoop && \
-    mkdir -p /home/hadoop/data/nameNode /home/hadoop/data/dataNode && \
-    chmod -R 700 /home/hadoop/data && \
+RUN groupadd -r hadoop && useradd -r -g hadoop -d /home/hadoop -m hadoop && \
+    apt install -y openssh-client openssh-server && ssh-keygen -A && \
+    mkdir /run/sshd && \
     chown -R hadoop:hadoop /home/hadoop /home/hadoop-3.3.6
 
 ENV HADOOP_HOME=/home/hadoop \
@@ -27,17 +23,25 @@ ENV HADOOP_HOME=/home/hadoop \
     YARN_RESOURCEMANAGER_USER=hadoop \
     YARN_NODEMANAGER_USER=hadoop \
     YARN_HOME=/home/hadoop \
-    JAVA_HOME=/opt/java/openjdk \
-    PDSH_RCMD_TYPE=ssh \
-    PATH=/home/hadoop/bin:/home/hadoop/sbin:/opt/java/openjdk/bin:$PATH
+    PDSH_RCMD_TYPE=ssh
+
+ENV JAVA_HOME=/opt/java/openjdk/bin:/opt/java/openjdk \
+    PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH 
+
+
+COPY --chown=hadoop:hadoop ./hadoop/etc/hadoop $HADOOP_CONF_DIR
 
 USER hadoop
+
 RUN ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa && \
     cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys && \
     chmod 0600 ~/.ssh/authorized_keys
 
-USER root
+RUN mkdir -p /home/hadoop/data/nameNode /home/hadoop/data/dataNode && \
+    chmod -R 700 /home/hadoop/data
 
 COPY test.txt /test.txt
+
+USER root
 
 CMD ["/usr/sbin/sshd", "-D"]
